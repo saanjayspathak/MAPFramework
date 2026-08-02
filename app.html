@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MAP App</title>
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#1565C0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MAP App">
+
+  <!-- Manifest Data URI for Standalone App Mode -->
+  <link rel="manifest" href='data:application/manifest+json,{
+    "name": "MAP Framework App",
+    "short_name": "MAP App",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#1565C0",
+    "icons": [
+      {
+        "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }'>
+
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #1565C0;
+    }
+
+    #appFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Replace with your deployed Google Apps Script /exec URL -->
+  <iframe 
+    id="appFrame" 
+    src="https://script.google.com/macros/s/AKfycbzgdEOqz_-MBpQeT2CVQynzUBTtJa-y49aOZm1PntAbEUfqrmb9ZaidMnIQvglLW9n19Q/exec" 
+    allow="geolocation; camera; microphone">
+  </iframe>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      var swCode = "self.addEventListener('fetch', function(e) {});";
+      var blob = new Blob([swCode], { type: 'application/javascript' });
+      var swUrl = URL.createObjectURL(blob);
+      
+      navigator.serviceWorker.register(swUrl).catch(function(err) {
+        console.log('SW Note:', err);
+      });
+    }
+  </script>
+
+</body>
+</html>

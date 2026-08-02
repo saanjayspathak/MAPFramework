@@ -1,0 +1,43 @@
+
+
+const SHEETS = {
+
+  SETTINGS     : "SETTINGS",
+  USERS        : "USERS",
+  USER_OTP     : "USER_OTP",
+  LOGIN_AUDIT  : "LOGIN_AUDIT",
+  HOME_DATA    : "HOME_DATA",
+  ERROR_LOG    : "ERROR_LOG",
+  LOOKUP       : "LOOKUP",
+  USER_SESSION : "USER_SESSION",
+  SEQUENCE_MASTER : "SEQUENCE_MASTER"
+
+};
+
+
+const ACTIONS = {
+
+  PING : "PING",
+
+  LOGIN : "LOGIN",
+
+  REGISTER : "REGISTER",
+
+  SENDOTP : "SENDOTP",
+
+  VERIFYOTP : "VERIFYOTP"
+
+};
+
+
+const SECURITY = {
+
+  PASSWORD_MIN_LENGTH : 8,
+
+  OTP_LENGTH : 6,
+
+  TOKEN_LENGTH : 32,
+
+  SESSION_TIMEOUT : 30
+
+};

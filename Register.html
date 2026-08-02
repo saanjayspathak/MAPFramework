@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .register-box {
+      width: 450px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,.20);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 12px;
+      border: none;
+      background: #1565C0;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0D47A1;
+    }
+    #message {
+      margin-top: 20px;
+      text-align: center;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="register-box">
+  <h2>User Registration</h2>
+
+  <label>Full Name</label>
+  <input type="text" id="txtName">
+
+  <label>Mobile Number</label>
+  <input type="text" id="txtMobile" maxlength="10">
+
+  <label>Email</label>
+  <input type="email" id="txtEmail">
+
+  <label>Password</label>
+  <input type="password" id="txtPassword">
+
+  <label>Confirm Password</label>
+  <input type="password" id="txtConfirmPassword">
+
+  <button type="button" onclick="registerUser()">Register</button>
+
+  <div id="message"></div>
+
+  <button type="button" style="background:#43A047; margin-top:15px;" onclick="goToLogin()">
+    Back To Login
+  </button>
+</div>
+
+
+
+
+<script>
+  // Explicitly attach to window so onclick works after innerHTML dynamic swap
+  window.registerUser = function() {
+      console.log("registerUser triggered");
+  
+      const nameObj = document.getElementById("txtName");
+      const mobileObj = document.getElementById("txtMobile");
+      const emailObj = document.getElementById("txtEmail");
+      const passObj = document.getElementById("txtPassword");
+      const confirmPassObj = document.getElementById("txtConfirmPassword");
+  
+      if (!nameObj || !mobileObj || !emailObj || !passObj) {
+          alert("Form inputs not found in DOM");
+          return;
+      }
+  
+      const fullName = nameObj.value.trim();
+      const mobile = mobileObj.value.trim();
+      const email = emailObj.value.trim();
+      const password = passObj.value;
+      const confirmPassword = confirmPassObj.value;
+  
+      if (!fullName || !mobile || !email || !password) {
+          showMessage("Please fill in all fields.");
+          return;
+      }
+  
+      if (password !== confirmPassword) {
+          showMessage("Passwords do not match.");
+          return;
+      }
+  
+      const userPayload = {
+          FULL_NAME: fullName,
+          MOBILE: mobile,
+          EMAIL: email,
+          PASSWORD: password
+      };
+  
+      showMessage("Registering user, please wait...");
+  
+      google.script.run
+          .withSuccessHandler(function(result) {
+              console.log("Register Server Response:", result);
+              if (!result || !result.success) {
+                  showMessage(result ? result.message : "Registration failed.");
+                  return;
+              }
+  
+              alert("Registration Successful!\nYour ID: " + (result.data ? result.data.USER_ID : "") + "\n\nPlease login.");
+              goToLogin();
+          })
+          .withFailureHandler(function(error) {
+              console.error("Register Server Failure:", error);
+              showMessage("Server Error: " + (error.message || error));
+          })
+          .registerUser(userPayload);
+  };
+  
+  window.goToLogin = function() {
+      google.script.run
+          .withSuccessHandler(function(html) {
+              const appContainer = document.getElementById("app");
+              appContainer.innerHTML = html;
+              
+              // Execute script tags within loaded HTML
+              const scripts = appContainer.getElementsByTagName("script");
+              for (let i = 0; i < scripts.length; i++) {
+                  try {
+                      eval(scripts[i].innerText);
+                  } catch(e) {
+                      console.error("Script eval error:", e);
+                  }
+              }
+          })
+          .getPage("Login");
+  };
+  
+  function showMessage(msg) {
+      const el = document.getElementById("message");
+      if (el) el.innerHTML = msg;
+  }
+  </script>
+
+</body>
+</html>

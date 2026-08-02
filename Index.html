@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAP Mobile App</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1565C0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MAP App">
+
+    <!-- Web App Manifest Data URI -->
+    <link rel="manifest" href='data:application/manifest+json,{
+      "name": "MAP Framework App",
+      "short_name": "MAP App",
+      "start_url": ".",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#1565C0",
+      "icons": [
+        {
+          "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }'>
+
+    <style>
+      html, body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Dynamic Screen Container -->
+    <div id="app">
+      <?!= include('Login'); ?>
+    </div>
+
+    <!-- OTP Overlay -->
+    <?!= include('OTPModal'); ?>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        var swCode = "self.addEventListener('fetch', function(e) {});";
+        var blob = new Blob([swCode], { type: 'application/javascript' });
+        var swUrl = URL.createObjectURL(blob);
+        
+        navigator.serviceWorker.register(swUrl).catch(function(err) {
+          console.log('SW registration note:', err);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+
+    .login-box {
+      width: 92%;
+      max-width: 400px;
+      margin: 60px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,.20);
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: #1565C0;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      background: #1565C0;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: #0D47A1;
+    }
+
+    .btn-register {
+      background: #43A047;
+      margin-top: 10px;
+    }
+
+    .btn-register:hover {
+      background: #2E7D32;
+    }
+
+    .help-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      font-size: 13px;
+    }
+
+    .help-links a {
+      color: #1565C0;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .help-links a:hover {
+      text-decoration: underline;
+    }
+
+    #message {
+      margin-top: 15px;
+      color: #D32F2F;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      min-height: 24px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-box">
+    <h2>MAP Framework</h2>
+
+    <label for="txtLogin">Mobile / Email</label>
+    <input type="text" id="txtLogin" autocomplete="off" placeholder="Enter Mobile or Email">
+
+    <label for="txtPassword">Password</label>
+    <input type="password" id="txtPassword" placeholder="Enter Password">
+
+    <button type="button" id="btnLogin" onclick="login(event)">Login</button>
+
+    <button type="button" class="btn-register" onclick="showRegisterPage(event)">
+      Register New User
+    </button>
+
+    <!-- Help Links -->
+    <div class="help-links">
+      <a href="#" onclick="showForgotPasswordPage(event)">Forgot Password?</a>
+      <a href="#" onclick="showForgotUserIdPage(event)">Forgot User ID?</a>
+    </div>
+
+    <div id="message"></div>
+  </div>
+
+<script>
+// 1. Main Login Handler
+window.login = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    var loginIdInput = document.getElementById("txtLogin");
+    var passwordInput = document.getElementById("txtPassword");
+
+    var loginId = loginIdInput ? loginIdInput.value.trim() : "";
+    var password = passwordInput ? passwordInput.value.trim() : "";
+
+    showMessage(""); // Clear message
+
+    // Validations
+    if (loginId === "") {
+        showMessage("Please enter Mobile or Email.");
+        if (loginIdInput) loginIdInput.focus();
+        return false;
+    }
+
+    if (password === "") {
+        showMessage("Please enter Password.");
+        if (passwordInput) passwordInput.focus();
+        return false;
+    }
+
+    showMessage("<span style='color:#1565C0;'>Authenticating...</span>");
+
+    // Call Backend
+    google.script.run
+        .withSuccessHandler(function(result) {
+            if (!result) {
+                showMessage("No response received from server.");
+                return;
+            }
+
+            if (!result.success) {
+                showMessage(result.message || "Invalid Mobile/Email or Password.");
+                return;
+            }
+
+            // OTP Modal Trigger
+            if (result.data && result.data.REQUIRES_OTP) {
+                showMessage("");
+                if (typeof showOtpModal === "function") {
+                    showOtpModal(result.data);
+                } else {
+                    showMessage("OTP Modal script missing in Index.html.");
+                }
+                return;
+            }
+
+            // Direct Redirect
+            if (result.data && result.data.SESSION_ID) {
+                sessionStorage.setItem("SESSION_ID", result.data.SESSION_ID);
+
+                google.script.run
+                    .withSuccessHandler(function(html) {
+                        var app = document.getElementById("app");
+                        if (app) {
+                            app.innerHTML = html;
+                            var scripts = app.getElementsByTagName("script");
+                            for (var i = 0; i < scripts.length; i++) {
+                                try { eval(scripts[i].innerText); } catch(err) {}
+                            }
+                            if (typeof loadDashboard === "function") {
+                                loadDashboard();
+                            }
+                        }
+                    })
+                    .getPage("Dashboard");
+            }
+        })
+        .withFailureHandler(function(error) {
+            showMessage("Server Error: " + (error.message || error.toString()));
+        })
+        .loginUser(loginId, password);
+
+    return false;
+};
+
+// 2. Register Navigation Handler
+window.showRegisterPage = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    google.script.run
+        .withSuccessHandler(function(html) {
+            var app = document.getElementById("app");
+            if (app) {
+                app.innerHTML = html;
+                var scripts = app.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                    try { eval(scripts[i].innerText); } catch(err) {}
+                }
+            }
+        })
+        .getPage("Register");
+};
+
+// 3. Forgot Password Navigation Handler
+window.showForgotPasswordPage = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    google.script.run
+        .withSuccessHandler(function(html) {
+            var app = document.getElementById("app");
+            if (app) {
+                app.innerHTML = html;
+                var scripts = app.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                    try { eval(scripts[i].innerText); } catch(err) {}
+                }
+            }
+        })
+        .getPage("ForgotPassword");
+};
+
+// 4. Forgot User ID Navigation Handler
+window.showForgotUserIdPage = function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    google.script.run
+        .withSuccessHandler(function(html) {
+            var app = document.getElementById("app");
+            if (app) {
+                app.innerHTML = html;
+                var scripts = app.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                    try { eval(scripts[i].innerText); } catch(err) {}
+                }
+            }
+        })
+        .getPage("ForgotUserId");
+};
+
+function showMessage(msg) {
+    var msgDiv = document.getElementById("message");
+    if (msgDiv) {
+        msgDiv.innerHTML = msg;
+    }
+}
+
+// Auto-bind click listener on page DOM ready
+document.addEventListener("DOMContentLoaded", function() {
+    var btnLogin = document.getElementById("btnLogin");
+    if (btnLogin) {
+        btnLogin.onclick = window.login;
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,674 @@
+<style>
+    * {
+      box-sizing: border-box;
+    }
+  
+    body, html {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+  
+    .dash-card {
+      width: 96%;
+      max-width: 1100px;
+      margin: 15px auto;
+      background: #ffffff;
+      padding: 18px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+  
+    .dash-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 12px;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+  
+    .dash-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #1565C0;
+    }
+  
+    .user-badge {
+      font-size: 13px;
+      color: #333;
+      background: #eef4fc;
+      padding: 6px 12px;
+      border-radius: 15px;
+      border: 1px solid #c8daee;
+      font-weight: bold;
+    }
+  
+    .role-tag-admin {
+      font-size: 11px;
+      background: #43A047;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+  
+    .role-tag-user {
+      font-size: 11px;
+      background: #1565C0;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 5px;
+    }
+  
+    .add-form-card {
+      background: #f8fafc;
+      border: 1px solid #d0dbe5;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+  
+    .add-form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+  
+    .form-group {
+      flex: 1;
+      min-width: 180px;
+    }
+  
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: bold;
+      color: #444;
+      margin-bottom: 4px;
+    }
+  
+    .form-group input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  
+    .btn-submit {
+      background: #1565C0;
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+  
+    .btn-submit:hover {
+      background: #0D47A1;
+    }
+  
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+  
+    .search-input {
+      width: 100%;
+      max-width: 320px;
+      padding: 8px 12px;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+  
+    .table-responsive-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+    }
+  
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+      font-size: 13px;
+    }
+  
+    .data-table th, .data-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      white-space: nowrap;
+    }
+  
+    .data-table th {
+      background-color: #1565C0;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+  
+    .data-table th:hover {
+      background-color: #0D47A1;
+    }
+  
+    .data-table tr:hover {
+      background-color: #f5f8fc;
+    }
+  
+    .btn-edit {
+      background: #f57c00;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+    }
+  
+    .btn-edit:hover {
+      background: #e65100;
+    }
+  
+    .pagination-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      font-size: 13px;
+      color: #666;
+    }
+  
+    .page-btn {
+      padding: 6px 14px;
+      border: none;
+      background: #1565C0;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  
+    .page-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+  
+    .btn-logout-small {
+      background: #d32f2f;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  
+    .btn-logout-small:hover {
+      background: #b71c1c;
+    }
+  
+    #addEntryMsg {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+  
+    @media (max-width: 600px) {
+      .dash-card { width: 98%; padding: 12px; margin: 5px auto; }
+      .search-input { max-width: 100%; }
+      .form-group { min-width: 100%; }
+    }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-box {
+    width: 92%;
+    max-width: 500px;
+    max-height: 85vh; /* Prevents modal from exceeding screen height */
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Fixed Modal Header */
+  .modal-header {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1565C0;
+    font-size: 18px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+  }
+
+  /* Inner Scrollable Form Container */
+  .modal-body {
+    overflow-y: auto;
+    max-height: 55vh;
+    padding-right: 8px;
+    margin-bottom: 15px;
+  }
+
+  /* Fixed Modal Footer Buttons */
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+  }
+</style>
+  
+  <div class="dash-card">
+    <!-- Header -->
+    <div class="dash-header">
+      <h2>MAP Dashboard</h2>
+      <div>
+        <span class="user-badge" id="lblWelcome">Loading...</span>
+        <button type="button" class="btn-logout-small" onclick="logout()" style="margin-left:8px;">Logout</button>
+      </div>
+    </div>
+  
+    <!-- Add New Entry Form Card -->
+    <div class="add-form-card">
+      <h3 style="margin:0 0 12px 0; font-size:15px; color:#1565C0;">➕ Add New Entry</h3>
+      <div class="add-form-grid">
+        <div class="form-group">
+          <label for="txtNewCol1">Column 1 Value</label>
+          <input type="text" id="txtNewCol1" placeholder="Enter value">
+        </div>
+        <div class="form-group">
+          <label for="txtNewColDate">Column Date 1</label>
+          <input type="date" id="txtNewColDate">
+        </div>
+        <button type="button" class="btn-submit" onclick="submitNewEntry()">Submit Record</button>
+      </div>
+      <div id="addEntryMsg"></div>
+    </div>
+  
+    <!-- Search & Stats Bar -->
+    <div class="table-controls">
+      <input type="text" id="txtSearch" class="search-input" placeholder="🔍 Search records..." onkeyup="filterTable()">
+      <span id="lblRecordCount" style="font-size:13px; color:#555;">Showing 0 records</span>
+    </div>
+  
+    <!-- Table Container -->
+    <div class="table-responsive-wrapper">
+      <table class="data-table" id="tblDashboard">
+        <thead>
+          <tr id="tblHeader">
+            <th>Loading headers...</th>
+          </tr>
+        </thead>
+        <tbody id="tblBody">
+          <tr>
+            <td style="text-align:center; padding:20px;">Loading HOME_DATA...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Pagination Bar -->
+    <div class="pagination-container">
+      <span id="lblPageInfo">Page 1 of 1</span>
+      <div>
+        <button type="button" id="btnPrev" class="page-btn" onclick="changePage(-1)">Previous</button>
+        <button type="button" id="btnNext" class="page-btn" onclick="changePage(1)">Next</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Admin Edit Modal -->
+  <div id="editModalOverlay" class="modal-overlay">
+    <div class="modal-box">
+      <h3 class="modal-header">✏️ Edit Record (Admin)</h3>
+      <input type="hidden" id="editRowIndex">
+      
+      <!-- Scrollable Form Fields -->
+      <div id="editFormFields" class="modal-body">
+        <!-- Dynamic Inputs Loaded Here -->
+      </div>
+  
+      <!-- Fixed Action Buttons -->
+      <div class="modal-footer">
+        <button type="button" onclick="closeEditModal()" style="padding:9px 16px; border:none; background:#757575; color:white; border-radius:4px; cursor:pointer;">Cancel</button>
+        <button type="button" onclick="saveEditedRecord()" class="btn-submit">Save Changes</button>
+      </div>
+      
+      <div id="editModalMsg" style="margin-top:8px; font-size:13px; font-weight:bold; text-align:center;"></div>
+    </div>
+  </div>
+
+  <script>
+  window.rawTableData = [];
+  window.filteredData = [];
+  window.currentPage = 1;
+  window.rowsPerPage = 10;
+  window.sortColumn = "";
+  window.sortAsc = true;
+  window.userRole = "USER";
+  
+  window.loadDashboard = function() {
+      var sessionId = sessionStorage.getItem("SESSION_ID");
+  
+      if (!sessionId) {
+          alert("Session expired. Please log in again.");
+          return;
+      }
+  
+      // 1. Fetch User Profile
+      google.script.run
+          .withSuccessHandler(function(result) {
+              if (result && result.success && result.data) {
+                  document.getElementById("lblWelcome").innerText = "Welcome, " + (result.data.FULL_NAME || "User");
+              }
+          })
+          .getCurrentUser(sessionId);
+  
+      // 2. Fetch User-Filtered HOME_DATA
+      google.script.run
+          .withSuccessHandler(function(result) {
+              if (!result || !result.success) {
+                  var errMsg = result ? result.message : "Failed to load response from backend.";
+                  document.getElementById("tblBody").innerHTML = "<tr><td style='color:red; text-align:center; padding:15px;'><b>Error:</b> " + errMsg + "</td></tr>";
+                  return;
+              }
+  
+              var dataObj = result.data;
+              window.userRole = String(dataObj.ROLE || "USER").toUpperCase().trim();
+              window.rawTableData = dataObj.RECORDS || [];
+              window.filteredData = Array.from(window.rawTableData);
+              window.currentPage = 1;
+  
+              // Render Single Role Badge cleanly
+              var isDbAdmin = window.userRole.indexOf("ADMIN") !== -1;
+              var tagClass = isDbAdmin ? "role-tag-admin" : "role-tag-user";
+              var displayRole = isDbAdmin ? "ADMIN" : "USER";
+              
+              document.getElementById("lblWelcome").innerHTML = "Welcome, " + (dataObj.USER_ID || "") + " <span class='" + tagClass + "'>" + displayRole + "</span>";
+  
+              renderTableHeader();
+              renderTableBody();
+          })
+          .withFailureHandler(function(err) {
+              var errStr = err.message || err.toString();
+              document.getElementById("tblBody").innerHTML = "<tr><td style='color:red; text-align:center; padding:15px;'><b>Server Failure:</b> " + errStr + "</td></tr>";
+          })
+          .getDashboardTableData(sessionId);
+  };
+  
+  function renderTableHeader() {
+      if (window.rawTableData.length === 0) return;
+  
+      var keys = Object.keys(window.rawTableData[0]);
+      var headerHtml = "";
+  
+      var isAdmin = window.userRole.indexOf("ADMIN") !== -1;
+      if (isAdmin) {
+          headerHtml += "<th>Actions</th>";
+      }
+  
+      keys.forEach(function(key) {
+          headerHtml += "<th onclick=\"sortData('" + key + "')\">" + key + " ⇅</th>";
+      });
+  
+      document.getElementById("tblHeader").innerHTML = headerHtml;
+  }
+  
+  function renderTableBody() {
+      var tbody = document.getElementById("tblBody");
+      if (window.filteredData.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='15' style='text-align:center; padding:20px;'>No matching records found.</td></tr>";
+          document.getElementById("lblRecordCount").innerText = "Showing 0 records";
+          document.getElementById("lblPageInfo").innerText = "Page 0 of 0";
+          return;
+      }
+  
+      var start = (window.currentPage - 1) * window.rowsPerPage;
+      var end = start + window.rowsPerPage;
+      var pageRecords = window.filteredData.slice(start, end);
+      var keys = Object.keys(window.rawTableData[0]);
+      var isAdmin = window.userRole.indexOf("ADMIN") !== -1;
+  
+      var bodyHtml = "";
+      pageRecords.forEach(function(row, idx) {
+          var actualIndex = start + idx;
+          bodyHtml += "<tr>";
+  
+          // Render Actions Column Edit Button
+          if (isAdmin) {
+              bodyHtml += "<td><button type='button' class='btn-edit' onclick='openEditModal(" + actualIndex + ")'>✏️ Edit</button></td>";
+          }
+  
+          keys.forEach(function(key) {
+              bodyHtml += "<td>" + (row[key] !== undefined ? row[key] : "") + "</td>";
+          });
+          bodyHtml += "</tr>";
+      });
+  
+      tbody.innerHTML = bodyHtml;
+  
+      var totalPages = Math.ceil(window.filteredData.length / window.rowsPerPage);
+      document.getElementById("lblRecordCount").innerText = "Showing " + (start + 1) + " to " + Math.min(end, window.filteredData.length) + " of " + window.filteredData.length + " records";
+      document.getElementById("lblPageInfo").innerText = "Page " + window.currentPage + " of " + totalPages;
+  
+      document.getElementById("btnPrev").disabled = (window.currentPage === 1);
+      document.getElementById("btnNext").disabled = (window.currentPage >= totalPages);
+  }
+  
+  window.openEditModal = function(filteredIdx) {
+      var record = window.filteredData[filteredIdx];
+      if (!record) return;
+  
+      var originalIdx = window.rawTableData.indexOf(record);
+      var sheetRowIndex = originalIdx + 2; 
+  
+      document.getElementById("editRowIndex").value = sheetRowIndex;
+      document.getElementById("editModalMsg").innerHTML = "";
+  
+      var fieldsHtml = "";
+      Object.keys(record).forEach(function(key) {
+          fieldsHtml += "<div style='margin-bottom:12px;'>" +
+                          "<label style='display:block; font-size:12px; font-weight:bold; margin-bottom:4px;'>" + key + "</label>" +
+                          "<input type='text' id='editField_" + key + "' value='" + String(record[key]).replace(/'/g, "&apos;") + "' style='width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;'>" +
+                        "</div>";
+      });
+  
+      document.getElementById("editFormFields").innerHTML = fieldsHtml;
+      document.getElementById("editModalOverlay").style.display = "block";
+  };
+  
+  window.closeEditModal = function() {
+      document.getElementById("editModalOverlay").style.display = "none";
+  };
+  
+  window.saveEditedRecord = function() {
+      var sessionId = sessionStorage.getItem("SESSION_ID");
+      var sheetRowIndex = document.getElementById("editRowIndex").value;
+      var msgDiv = document.getElementById("editModalMsg");
+  
+      if (window.rawTableData.length === 0) return;
+  
+      var updatedObj = {};
+      var keys = Object.keys(window.rawTableData[0]);
+  
+      keys.forEach(function(key) {
+          var inputElem = document.getElementById("editField_" + key);
+          if (inputElem) {
+              updatedObj[key] = inputElem.value.trim();
+          }
+      });
+  
+      msgDiv.innerHTML = "<span style='color:blue;'>Saving updates...</span>";
+  
+      google.script.run
+          .withSuccessHandler(function(res) {
+              if (!res || !res.success) {
+                  msgDiv.innerHTML = "<span style='color:red;'>" + (res ? res.message : "Save failed") + "</span>";
+                  return;
+              }
+  
+              msgDiv.innerHTML = "<span style='color:green;'>" + res.message + "</span>";
+              setTimeout(function() {
+                  closeEditModal();
+                  window.loadDashboard();
+              }, 1200);
+          })
+          .withFailureHandler(function(err) {
+              msgDiv.innerHTML = "<span style='color:red;'>Server Error: " + err + "</span>";
+          })
+          .updateHomeDataEntry(sessionId, sheetRowIndex, updatedObj);
+  };
+  
+  window.submitNewEntry = function() {
+      var sessionId = sessionStorage.getItem("SESSION_ID");
+      var col1 = document.getElementById("txtNewCol1").value.trim();
+      var colDate = document.getElementById("txtNewColDate").value;
+      var msgDiv = document.getElementById("addEntryMsg");
+  
+      if (!col1 || !colDate) {
+          msgDiv.innerHTML = "<span style='color:red;'>Please fill in both Column 1 Value and Date.</span>";
+          return;
+      }
+  
+      msgDiv.innerHTML = "<span style='color:blue;'>Submitting record...</span>";
+
+      google.script.run
+          .withSuccessHandler(function(res) {
+              if (!res || !res.success) {
+                  msgDiv.innerHTML = "<span style='color:red;'>" + (res ? res.message : "Submission failed") + "</span>";
+                  return;
+              }
+  
+              msgDiv.innerHTML = "<span style='color:green;'>" + res.message + "</span>";
+              document.getElementById("txtNewCol1").value = "";
+              document.getElementById("txtNewColDate").value = "";
+  
+              window.loadDashboard();
+          })
+          .withFailureHandler(function(err) {
+              msgDiv.innerHTML = "<span style='color:red;'>Server Error: " + err + "</span>";
+          })
+          .addHomeDataEntry(sessionId, col1, colDate);
+  };
+  
+  function filterTable() {
+      var query = document.getElementById("txtSearch").value.toLowerCase().trim();
+  
+      if (query === "") {
+          window.filteredData = Array.from(window.rawTableData);
+      } else {
+          window.filteredData = window.rawTableData.filter(function(row) {
+              return Object.values(row).some(function(val) {
+                  return String(val).toLowerCase().includes(query);
+              });
+          });
+      }
+  
+      window.currentPage = 1;
+      renderTableBody();
+  }
+  
+  function sortData(columnKey) {
+      if (window.sortColumn === columnKey) {
+          window.sortAsc = !window.sortAsc;
+      } else {
+          window.sortColumn = columnKey;
+          window.sortAsc = true;
+      }
+  
+      window.filteredData.sort(function(a, b) {
+          var valA = a[columnKey] !== undefined ? a[columnKey] : "";
+          var valB = b[columnKey] !== undefined ? b[columnKey] : "";
+  
+          if (valA < valB) return window.sortAsc ? -1 : 1;
+          if (valA > valB) return window.sortAsc ? 1 : -1;
+          return 0;
+      });
+  
+      renderTableBody();
+  }
+  
+  function changePage(direction) {
+      var totalPages = Math.ceil(window.filteredData.length / window.rowsPerPage);
+      var newPage = window.currentPage + direction;
+  
+      if (newPage >= 1 && newPage <= totalPages) {
+          window.currentPage = newPage;
+          renderTableBody();
+      }
+  }
+  
+  window.logout = function() {
+      var sessionId = sessionStorage.getItem("SESSION_ID");
+      
+      // Clear session locally immediately
+      sessionStorage.removeItem("SESSION_ID");
+
+      google.script.run
+          .withSuccessHandler(function() {
+              google.script.run
+                  .withSuccessHandler(function(html) {
+                      var app = document.getElementById("app");
+                      if (app) {
+                          app.innerHTML = html;
+
+                          // Execute embedded scripts inside injected Login HTML
+                          var scripts = app.getElementsByTagName("script");
+                          for (var i = 0; i < scripts.length; i++) {
+                              try { eval(scripts[i].innerText); } catch(e) {}
+                          }
+
+                          // Re-bind login button listener explicitly
+                          var btnLogin = document.getElementById("btnLogin");
+                          if (btnLogin && typeof window.login === "function") {
+                              btnLogin.onclick = window.login;
+                          }
+                      }
+                  })
+                  .getPage("Login");
+          })
+          .withFailureHandler(function(err) {
+              // Fallback redirect even if backend delete session errors out
+              sessionStorage.clear();
+              location.reload();
+          })
+          .logoutUser(sessionId);
+  };
+  
+  loadDashboard();
+  </script>
+  

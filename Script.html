@@ -1,0 +1,71 @@
+<script>
+
+    function showMessage(id, message) {
+        const obj = document.getElementById(id);
+        if (obj) {
+            obj.innerHTML = message;
+        }
+    }
+    
+    function clearMessage(id) {
+        showMessage(id, "");
+    }
+    
+    /************************************************
+     Load Dashboard (FIXED)
+    ************************************************/
+    
+    function loadDashboard() {
+        const sessionId = sessionStorage.getItem("SESSION_ID");
+    
+        if (!sessionId) {
+            document.getElementById("userInfo").innerHTML = "<b style='color:red;'>Session expired or invalid. Please login again.</b>";
+            return;
+        }
+    
+        google.script.run
+            .withSuccessHandler(function(result) {
+                if (!result || !result.success) {
+                    document.getElementById("userInfo").innerHTML = 
+                        "<b style='color:red;'>" + (result ? result.message : "Error fetching user data") + "</b>";
+                    return;
+                }
+    
+                const data = result.data;
+    
+                // Render Dashboard User Data
+                document.getElementById("userInfo").innerHTML =
+                    "<h3>Welcome, " + (data.FULL_NAME || "User") + "!</h3>" +
+                    "<p><b>User ID:</b> " + (data.USER_ID || "N/A") + "</p>" +
+                    "<p><b>Session ID:</b> " + data.SESSION_ID + "</p>" +
+                    "<p><b>Login Time:</b> " + (data.LOGIN_TIME || "N/A") + "</p>";
+            })
+            .withFailureHandler(function(error) {
+                document.getElementById("userInfo").innerHTML = "<b style='color:red;'>Server Error: " + (error.message || error) + "</b>";
+            })
+            .getCurrentUser(sessionId);
+    }
+    
+    /************************************************
+     Logout
+    ************************************************/
+    
+    function logout() {
+        const sessionId = sessionStorage.getItem("SESSION_ID");
+    
+        google.script.run
+            .withSuccessHandler(function () {
+                sessionStorage.removeItem("SESSION_ID");
+                google.script.run
+                    .withSuccessHandler(function (html) {
+                        document.getElementById("app").innerHTML = html;
+                    })
+                    .getPage("Login");
+            })
+            .withFailureHandler(function (error) {
+                alert(error.message || error);
+            })
+            .logoutUser(sessionId);
+    }
+    
+    </script>

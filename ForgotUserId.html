@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    body { margin: 0; padding: 0; background: #f4f4f4; }
+    .box {
+      width: 92%; max-width: 420px; margin: 50px auto;
+      background: #ffffff; padding: 25px; border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,.15);
+    }
+    h2 { text-align: center; margin-top: 0; color: #1565C0; }
+    label { display: block; margin-top: 15px; font-weight: bold; font-size: 13px; }
+    input {
+      width: 100%; padding: 10px; margin-top: 5px;
+      border: 1px solid #cccccc; border-radius: 4px; font-size: 14px;
+    }
+    button {
+      width: 100%; margin-top: 20px; padding: 11px;
+      border: none; background: #1565C0; color: white;
+      font-size: 15px; cursor: pointer; border-radius: 4px;
+    }
+    button:hover { background: #0D47A1; }
+    .btn-secondary { background: #757575; margin-top: 10px; }
+    .result-card {
+      margin-top: 20px; background: #eef4fc; padding: 15px;
+      border-radius: 6px; border: 1px solid #c8daee; text-align: center;
+    }
+    #msg { margin-top: 15px; text-align: center; font-weight: bold; font-size: 13px; min-height: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Recover User ID</h2>
+
+  <!-- Step 1: Verification Form -->
+  <div id="idStep1">
+    <label for="txtIdEmail">Registered Email</label>
+    <input type="email" id="txtIdEmail" placeholder="e.g. saanjayspathak@gmail.com">
+
+    <label for="txtIdMobile">Registered Mobile</label>
+    <input type="text" id="txtIdMobile" placeholder="e.g. 8830041371">
+
+    <button type="button" onclick="submitForgotUserId()">Find Account</button>
+    <button type="button" class="btn-secondary" onclick="backToLogin()">Back to Login</button>
+  </div>
+
+  <!-- Step 2: OTP Verification -->
+  <div id="idStep2" style="display:none;">
+    <input type="hidden" id="foundUserId">
+    <input type="hidden" id="foundUserName">
+
+    <label for="txtIdEmailOtp">Email OTP</label>
+    <input type="text" id="txtIdEmailOtp" placeholder="Enter Email OTP (123456)" maxlength="6">
+
+    <label for="txtIdMobileOtp">Mobile OTP</label>
+    <input type="text" id="txtIdMobileOtp" placeholder="Enter Mobile OTP (654321)" maxlength="6">
+
+    <button type="button" onclick="verifyUserIdOtp()">Verify OTPs</button>
+  </div>
+
+  <!-- Step 3: Output Display -->
+  <div id="idStep3" style="display:none;">
+    <div class="result-card">
+      <h3 style="margin:0 0 10px 0; color:#1565C0;">Account Found!</h3>
+      <p style="margin:5px 0;"><b>Name:</b> <span id="lblFoundName"></span></p>
+      <p style="margin:5px 0; font-size:16px;"><b>Your User ID:</b> <span id="lblFoundId" style="color:#2E7D32; font-weight:bold;"></span></p>
+    </div>
+    <button type="button" onclick="backToLogin()" style="background:#43A047;">Proceed to Login</button>
+  </div>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+window.submitForgotUserId = function() {
+    var email = document.getElementById("txtIdEmail").value.trim();
+    var mobile = document.getElementById("txtIdMobile").value.trim();
+    var msgDiv = document.getElementById("msg");
+
+    if (!email || !mobile) {
+        msgDiv.innerHTML = "<span style='color:red;'>Please enter Email and Mobile.</span>";
+        return;
+    }
+
+    msgDiv.innerHTML = "<span style='color:blue;'>Searching...</span>";
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            if (!res || !res.success) {
+                msgDiv.innerHTML = "<span style='color:red;'>" + (res ? res.message : "Account not found") + "</span>";
+                return;
+            }
+
+            document.getElementById("foundUserId").value = res.data.USER_ID;
+            document.getElementById("foundUserName").value = res.data.FULL_NAME || "User";
+            document.getElementById("idStep1").style.display = "none";
+            document.getElementById("idStep2").style.display = "block";
+            msgDiv.innerHTML = "<span style='color:green;'>Account found! Enter OTPs (123456 / 654321).</span>";
+        })
+        .withFailureHandler(function(err) {
+            msgDiv.innerHTML = "<span style='color:red;'>Error: " + err + "</span>";
+        })
+        .recoverUserId(email, mobile);
+};
+
+window.verifyUserIdOtp = function() {
+    var emailOtp = document.getElementById("txtIdEmailOtp").value.trim();
+    var mobileOtp = document.getElementById("txtIdMobileOtp").value.trim();
+    var userId = document.getElementById("foundUserId").value;
+    var name = document.getElementById("foundUserName").value;
+    var msgDiv = document.getElementById("msg");
+
+    if (!emailOtp || !mobileOtp) {
+        msgDiv.innerHTML = "<span style='color:red;'>Please enter both OTPs.</span>";
+        return;
+    }
+
+    google.script.run
+        .withSuccessHandler(function(res) {
+            if (!res || !res.success) {
+                msgDiv.innerHTML = "<span style='color:red;'>" + (res ? res.message : "OTP Verification failed") + "</span>";
+                return;
+            }
+
+            document.getElementById("idStep2").style.display = "none";
+            document.getElementById("idStep3").style.display = "block";
+            document.getElementById("lblFoundName").innerText = name;
+            document.getElementById("lblFoundId").innerText = userId;
+            msgDiv.innerHTML = "";
+        })
+        .withFailureHandler(function(err) {
+            msgDiv.innerHTML = "<span style='color:red;'>Error: " + err + "</span>";
+        })
+        .verifyDummyOTP(emailOtp, mobileOtp, userId);
+};
+
+window.backToLogin = function() {
+    google.script.run
+        .withSuccessHandler(function(html) {
+            var app = document.getElementById("app");
+            if (app) {
+                app.innerHTML = html;
+                var scripts = app.getElementsByTagName("script");
+                for (var i = 0; i < scripts.length; i++) {
+                    try { eval(scripts[i].innerText); } catch(e) {}
+                }
+            }
+        })
+        .getPage("Login");
+};
+</script>
+
+</body>
+</html>
