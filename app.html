@@ -12,8 +12,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MAP App">
 
-  <!-- Link External Manifest -->
-  <link rel="manifest" href="manifest.json">
+  <!-- Correct Relative Manifest Path -->
+  <link rel="manifest" href="./manifest.json">
 
   <style>
     * { box-sizing: border-box; }
@@ -36,14 +36,12 @@
 </head>
 <body>
 
-  <!-- Replace with your deployed Google Apps Script /exec URL if different -->
   <iframe 
     id="appFrame" 
     src="https://script.google.com/macros/s/AKfycbzgdEOqz_-MBpQeT2CVQynzUBTtJa-y49aOzM1PntAbEUfqrmb9ZaidMnIQvglLW9n19Q/exec" 
     allow="geolocation; camera; microphone">
   </iframe>
 
-  <!-- Service Worker Registration for Web App Installation -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
