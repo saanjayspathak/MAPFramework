@@ -1,0 +1,22 @@
+{
+    "name": "MAP Framework App",
+    "short_name": "MAP App",
+    "start_url": "./app.html",
+    "display": "standalone",
+    "background_color": "#1565C0",
+    "theme_color": "#1565C0",
+    "icons": [
+      {
+        "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  }

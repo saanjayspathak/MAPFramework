@@ -5,29 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MAP App</title>
 
-  <!-- PWA Meta Tags -->
+  <!-- PWA & Mobile Engine Meta Tags -->
   <meta name="theme-color" content="#1565C0">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MAP App">
 
-  <!-- Manifest Data URI for Standalone App Mode -->
-  <link rel="manifest" href='data:application/manifest+json,{
-    "name": "MAP Framework App",
-    "short_name": "MAP App",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#1565C0",
-    "icons": [
-      {
-        "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-        "sizes": "512x512",
-        "type": "image/png"
-      }
-    ]
-  }'>
+  <!-- Link External Manifest -->
+  <link rel="manifest" href="manifest.json">
 
   <style>
     * { box-sizing: border-box; }
@@ -50,21 +36,24 @@
 </head>
 <body>
 
-  <!-- Replace with your deployed Google Apps Script /exec URL -->
+  <!-- Replace with your deployed Google Apps Script /exec URL if different -->
   <iframe 
     id="appFrame" 
-    src="https://script.google.com/macros/s/AKfycbzgdEOqz_-MBpQeT2CVQynzUBTtJa-y49aOZm1PntAbEUfqrmb9ZaidMnIQvglLW9n19Q/exec" 
+    src="https://script.google.com/macros/s/AKfycbzgdEOqz_-MBpQeT2CVQynzUBTtJa-y49aOzM1PntAbEUfqrmb9ZaidMnIQvglLW9n19Q/exec" 
     allow="geolocation; camera; microphone">
   </iframe>
 
+  <!-- Service Worker Registration for Web App Installation -->
   <script>
     if ('serviceWorker' in navigator) {
-      var swCode = "self.addEventListener('fetch', function(e) {});";
-      var blob = new Blob([swCode], { type: 'application/javascript' });
-      var swUrl = URL.createObjectURL(blob);
-      
-      navigator.serviceWorker.register(swUrl).catch(function(err) {
-        console.log('SW Note:', err);
+      window.addEventListener('load', function() {
+        var swCode = "self.addEventListener('fetch', function(e) {});";
+        var blob = new Blob([swCode], { type: 'application/javascript' });
+        var swUrl = URL.createObjectURL(blob);
+        
+        navigator.serviceWorker.register(swUrl).catch(function(err) {
+          console.log('SW Note:', err);
+        });
       });
     }
   </script>
